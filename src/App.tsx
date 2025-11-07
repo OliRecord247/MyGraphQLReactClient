@@ -11,6 +11,9 @@ const App: FC = () => {
 
   const { data, loading, error, addTodo, toggleTodo, deleteTodo } = useTodos();
 
+  const openTodos = data?.todos.filter((t) => !t.done) || [];
+  const closedTodos = data?.todos.filter((t) => t.done) || [];
+
   if (loading) return <p>Loading…</p>;
   if (error) return <p>Error: {error.message}</p>;
 
@@ -42,31 +45,47 @@ const App: FC = () => {
   };
 
   return (
-    <main
-      style={{ maxWidth: 600, margin: "2rem auto", fontFamily: "system-ui" }}
-    >
-      <h1>Todos</h1>
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          if (!text.trim()) return;
-          await addTodo({ variables: { text } });
-          setText("");
-        }}
-      >
-        <input
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="New todo"
-        />
-        <button type="submit">Add</button>
-      </form>
+    <main className="todo-app">
+      <section className="todo-form-section">
+        <h1 className="todo-header">Add Task</h1>
+        <form
+          className="todo-form"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!text.trim()) return;
+            await addTodo({ variables: { text } });
+            setText("");
+          }}
+        >
+          <input
+            className="todo-input"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="What needs to be done?"
+          />
+          <button className="todo-submit" type="submit">
+            Add Todo
+          </button>
+        </form>
+      </section>
 
-      <TodoList
-        todos={data?.todos || []}
-        onToggle={toggleTodoById}
-        onDelete={deleteTodoById}
-      />
+      <section className="todo-list-section">
+        <h1 className="todo-header">Open Tasks</h1>
+        <TodoList
+          todos={openTodos}
+          onToggle={toggleTodoById}
+          onDelete={deleteTodoById}
+        />
+      </section>
+
+      <section className="todo-list-section">
+        <h1 className="todo-header">Closed Tasks</h1>
+        <TodoList
+          todos={closedTodos}
+          onToggle={toggleTodoById}
+          onDelete={deleteTodoById}
+        />
+      </section>
     </main>
   );
 };
