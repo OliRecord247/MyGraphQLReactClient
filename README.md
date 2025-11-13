@@ -1,73 +1,108 @@
-# React + TypeScript + Vite
+# GraphQL React Client (practice project)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository is a small practice project that demonstrates how to build a React + TypeScript client using Apollo Client to talk to a GraphQL server. It was created as a learning exercise and includes a minimal to-do example showing queries and mutations.
 
-Currently, two official plugins are available:
+## What this project contains
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- A Vite + React + TypeScript frontend
+- Apollo Client setup in `src/lib/apollo.ts` (default endpoint: `http://localhost:4000/graphql`)
+- A small todo example in `src/services/todoService.ts` which defines GraphQL operations and a `useTodos` hook
+- Types in `src/types/todo.ts` and a simple `TodoList` component under `src/components/todos/`
 
-## React Compiler
+This project is intended as a client-side example only. A GraphQL server is not included — you should run (or point to) a compatible GraphQL server separately.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Quick start
 
-## Expanding the ESLint configuration
+Prerequisites:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Node.js (v16 or newer recommended)
+- npm (or yarn/pnpm, adjust commands accordingly)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Install dependencies
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```shell
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Start a local GraphQL server
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+This repo expects a GraphQL endpoint at `http://localhost:4000/graphql` by default. You can:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Run your own server (for example, a simple Apollo Server or GraphQL Yoga instance)
+- Use the example schema that the frontend expects (a `todos` query and `addTodo`, `toggleTodo`, `deleteTodo` mutations). The queries and mutations used by the client are in `src/services/todoService.ts`.
+
+3. Run the dev server
+
+```shell
+npm run dev
 ```
+
+The app will open on the port reported by Vite (usually `http://localhost:5173`). If your GraphQL server runs on a different URL, update the URI in `src/lib/apollo.ts`.
+
+Build for production
+
+```shell
+npm run build
+npm run preview
+```
+
+Linting
+
+```shell
+npm run lint
+```
+
+## Scripts (from package.json)
+
+- `dev` — start the Vite dev server
+- `build` — compile TypeScript and build a production bundle with Vite
+- `preview` — preview the production build locally
+- `lint` — run ESLint
+
+## Key dependencies
+
+This project uses the following notable dependencies (exact versions are in `package.json`):
+
+- `react`, `react-dom` — UI library
+- `@apollo/client` — Apollo Client for GraphQL queries/mutations
+- `graphql` — GraphQL core library
+- `vite` — dev server and build tool
+- `typescript` — static types
+
+Dev / linting helpers include ESLint and type definitions for React and Node.
+
+## Code layout (important files)
+
+- `src/lib/apollo.ts` — Apollo Client instance and GraphQL endpoint
+- `src/services/todoService.ts` — GraphQL queries/mutations and `useTodos` hook used by components
+- `src/types/todo.ts` — TypeScript `Todo` type
+- `src/components/todos/TodoList.tsx` — example UI (and `TodoList.css`)
+- `index.html`, `src/main.tsx`, `App.tsx` — app entry and root component
+
+## How to point to a different GraphQL server
+
+Open `src/lib/apollo.ts` and change the `uri` property on the `HttpLink` to your server's GraphQL endpoint.
+
+Example:
+
+```ts
+// src/lib/apollo.ts
+new HttpLink({
+  uri: process.env.VITE_GRAPHQL_URL ?? "http://localhost:4000/graphql",
+});
+```
+
+You can also wire an environment variable to Vite by creating a `.env` file with `VITE_GRAPHQL_URL` and restart the dev server.
+
+## Notes / next steps
+
+- The project is intentionally minimal to keep focus on the GraphQL client patterns. Possible improvements:
+  - Add tests around the `useTodos` hook (React Testing Library + msw)
+  - Add environment-based configuration for the GraphQL URL
+  - Add CI linting and type checks
+
+If you'd like, I can add a small example GraphQL server (Node + Apollo Server) in a sibling folder to make the project runnable end-to-end.
+
+## License
+
+This is a small practice project. Use or adapt the code as you like.
